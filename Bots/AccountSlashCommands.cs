@@ -5,7 +5,6 @@ using ExpenseManager.Data.AccountResponses.Responses;
 using ExpenseManager.Data.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace ExpenseManager.Bots;
 
 [Group("account", "Account management commands")]
