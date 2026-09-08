@@ -1,5 +1,6 @@
 using ExpenseManager.Data.Models;
-using ExpenseManager.Data.Requests;
+using ExpenseManager.Data.AccountRequests.Requests;
+using ExpenseManager.Data.AccountResponses.Responses;
 using ExpenseManager.Data.Responses;
 using ExpenseManager.Repository;
 using MapsterMapper;
