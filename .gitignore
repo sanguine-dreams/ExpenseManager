@@ -1,0 +1,63 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Environment files
+.env
+.env.local
+
+# Visual Studio cache files
+.vs/
+
+# Rider files
+.idea/
+*.sln.iml
+
+# .NET publish output
+publish/
+
+# npm packages
+node_modules/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Local app settings
+appsettings.Development.json
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Rider and VS Code workspace settings
+.vscode/
+
+# Dependency directories
+packages/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# OS generated files
+.DS_Store
+Thumbs.db
