@@ -1,0 +1,22 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/ExpenseManager
+            git pull origin main
+            dotnet publish -c Release -o /var/www/ExpenseManager/publish
+            chown -R expensemanager:expensemanager /var/www/ExpenseManager
+            sudo systemctl restart expensemanager   
