@@ -11,7 +11,6 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
 {
     private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly IMapper _mapper = mapper;
-
     public async Task<ServiceResponse<AccountResponse>> GetOrCreateAccount(string discordId, string discordDisplayName, string? guildId = null)
     {
         var account = await _accountRepository.GetByDiscordId(discordId, guildId ?? string.Empty);
