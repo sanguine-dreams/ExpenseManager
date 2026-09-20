@@ -23,20 +23,20 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
     {
         await DeferAsync(ephemeral: true);
         var userDiscordId = Context.User.Id.ToString();
-        var username = Context.User.Username;
+        var displayName = Context.Guild?.GetUser(Context.User.Id)?.Nickname ?? Context.User.GlobalName ?? Context.User.Username;
 
         var request = new CreateExpenseRequest
         {
             Price = price,
             Category = category,
-            PurchasedBy = username,
+            PurchasedBy = displayName,
             Other = string.IsNullOrWhiteSpace(other) ? null : other,
         };
 
 
         var controller = ActivatorUtilities.CreateInstance<ExpenseManagerController>(_services);
         var guildId = Context.Guild?.Id.ToString();
-        var actionResult = await controller.CreateExpense(request, userDiscordId, username, guildId);
+        var actionResult = await controller.CreateExpense(request, userDiscordId, displayName, guildId);
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<CreateExpenseResponse> svc)
         {

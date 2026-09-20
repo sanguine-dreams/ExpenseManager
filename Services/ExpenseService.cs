@@ -54,7 +54,6 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
 
         if (!result.IsSuccess) return ServiceResponse<PagedResult<GetExpensesResponse>>.InternalError(result.Message);
         var response = _mapper.Map<PagedResult<GetExpensesResponse>>(result.Data);
-
         return ServiceResponse<PagedResult<GetExpensesResponse>>.Success(response);
     }
 
