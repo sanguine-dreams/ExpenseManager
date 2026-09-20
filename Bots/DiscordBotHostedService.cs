@@ -128,8 +128,6 @@ public class DiscordBotHostedService : IHostedService, IDisposable
                           "• /account increase — Increase account balance\n" +
                           "• /expense create — Create an expense (requires an account)\n" +
                           "• /expense list — List expenses\n" +
-                          "• /expense get — Get an expense by id\n" +
-                          "• /expense delete — Delete an expense\n\n" +
                           "If you need help, use the slash commands and check the documentation.";
 
             await channel.SendMessageAsync(message);
