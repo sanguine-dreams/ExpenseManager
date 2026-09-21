@@ -2,6 +2,8 @@ using System.Reflection;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using ExpenseManager.Data.DB;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 
@@ -39,6 +41,7 @@ public class DiscordBotHostedService : IHostedService, IDisposable
         _interactionService.Log += LogAsync;
         _client.Ready += ReadyAsync;
         _client.JoinedGuild += JoinedGuildAsync;
+        _client.LeftGuild += LeftGuildAsync;
         _client.InteractionCreated += InteractionCreatedAsync;
 
         await _interactionService.AddModulesAsync(Assembly.GetExecutingAssembly(), _services);
@@ -138,6 +141,52 @@ public class DiscordBotHostedService : IHostedService, IDisposable
         }
     }
 
+    private async Task LeftGuildAsync(SocketGuild guild)
+    {
+        try
+        {
+            var guildId = guild.Id.ToString();
+
+            using var scope = _services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<DBContext>();
+
+            var accounts = await db.Accounts
+                .Where(a => a.GuildId == guildId)
+                .ToListAsync();
+
+            if (accounts.Count > 0)
+            {
+                db.Accounts.RemoveRange(accounts);
+            }
+
+            var expenses = await db.Expenses
+                .Where(e => e.GuildId == guildId)
+                .ToListAsync();
+
+            if (expenses.Count > 0)
+            {
+                db.Expenses.RemoveRange(expenses);
+            }
+
+            var guildSettings = await db.GuildSettings
+                .Where(g => g.GuildId == guild.Id)
+                .ToListAsync();
+
+            if (guildSettings.Count > 0)
+            {
+                db.GuildSettings.RemoveRange(guildSettings);
+            }
+
+            await db.SaveChangesAsync();
+
+            _logger.LogInformation("Removed all saved data for guild {GuildId} ({GuildName}) after the bot left the guild.", guild.Id, guild.Name);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to clean up data for guild {GuildId} after the bot left the guild.", guild.Id);
+        }
+    }
+
     private static LogLevel ConvertLogSeverity(LogSeverity severity) => severity switch
     {
         LogSeverity.Critical => LogLevel.Critical,
@@ -156,6 +205,7 @@ public class DiscordBotHostedService : IHostedService, IDisposable
         _interactionService.Log -= LogAsync;
         _client.Ready -= ReadyAsync;
         _client.JoinedGuild -= JoinedGuildAsync;
+        _client.LeftGuild -= LeftGuildAsync;
         _client.InteractionCreated -= InteractionCreatedAsync;
         _disposed = true;
     }
