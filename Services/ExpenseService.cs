@@ -24,6 +24,11 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
                 return ServiceResponse<CreateExpenseResponse>.BadRequest("No account found for your Discord user. Create one using the /account create command.");
             }
 
+            if (!string.IsNullOrWhiteSpace(accountResult.Data.Nickname))
+            {
+                request.PurchasedBy = accountResult.Data.Nickname;
+            }
+
             accountResult.Data.Income -= request.Price;
             var editAcc = await _accountRepository.EditAccount(accountResult.Data);
             if (!editAcc.IsSuccess)
