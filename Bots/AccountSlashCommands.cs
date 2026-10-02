@@ -23,7 +23,6 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
         var request = new AccountCreationRequest
         {
             Nickname = nickname,
-            DiscordId = discordId,
             Income = income,
             Savings = savings,
         };
@@ -31,6 +30,27 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
         var controller = ActivatorUtilities.CreateInstance<AccountManagerController>(_services);
         var guildId = Context.Guild?.Id.ToString();
         var actionResult = await controller.CreateAccount(request, discordId, Context.User.Username, guildId);
+
+        if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<AccountResponse> svc)
+        {
+            await RespondAsync(svc.IsSuccess ? $"Account created successfully: {svc.Data?.Nickname}" : svc.Message, ephemeral: true);
+            return;
+        }
+
+        await RespondAsync("Unexpected response from API controller.", ephemeral: true);
+    }
+
+    [SlashCommand("get", "Get Account Details.")]
+    public async Task GetAccount(
+       [Summary("nickname", "Display name for the account.")] string nickname,
+       [Summary("income", "Initial income amount.")] double income = 0,
+       [Summary("savings", "Initial savings amount.")] double savings = 0)
+    {
+        var discordId = Context.User.Id.ToString();
+
+        var controller = ActivatorUtilities.CreateInstance<AccountManagerController>(_services);
+        var guildId = Context.Guild?.Id.ToString();
+        var actionResult = await controller.GetAccount(discordId, Context.User.Username, guildId);
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<AccountResponse> svc)
         {

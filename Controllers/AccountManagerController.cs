@@ -13,10 +13,17 @@ public class AccountManagerController(IAccountService accountService) : Controll
     public async Task<IActionResult> CreateAccount(AccountCreationRequest input, [FromHeader(Name = "X-Discord-Id")] string? discordId = null, [FromHeader(Name = "X-Discord-Username")] string? discordUsername = null, [FromHeader(Name = "X-Guild-Id")] string? guildId = null)
     {
         // If the bot provided the discord id via header, prefer that value
-        if (!string.IsNullOrWhiteSpace(discordId)) input.DiscordId = discordId;
         if (!string.IsNullOrWhiteSpace(discordUsername) && string.IsNullOrWhiteSpace(input.Nickname)) input.Nickname = discordUsername;
 
         var response = await _accountService.Create(input, guildId);
+        return StatusCode(response.StatusCode, response);
+    }
+
+
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetAccount([FromHeader(Name = "X-Discord-Id")] string? discordId = null, [FromHeader(Name = "X-Discord-Username")] string? discordUsername = null, [FromHeader(Name = "X-Guild-Id")] string? guildId = null)
+    {
+        var response = await _accountService.GetAccount(discordId, discordUsername, guildId);
         return StatusCode(response.StatusCode, response);
     }
 

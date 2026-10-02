@@ -21,12 +21,18 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         var createRequest = new AccountCreationRequest
         {
             Nickname = discordDisplayName,
-            DiscordId = discordId,
             Income = 0.0,
             Savings = 0.0,
         };
 
         return await Create(createRequest, guildId);
+    }
+
+    public async Task<ServiceResponse<AccountResponse>> GetAccount(string discordId, string discordDisplayName, string? guildId = null)
+    {
+        var account = await _accountRepository.GetByDiscordId(discordId, guildId ?? string.Empty);
+
+        return ServiceResponse<AccountResponse>.Success(_mapper.Map<AccountResponse>(account.Data));
     }
 
     public async Task<ServiceResponse<AccountResponse>> Create(AccountCreationRequest request, string? guildId = null)

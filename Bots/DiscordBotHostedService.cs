@@ -129,9 +129,9 @@ public class DiscordBotHostedService : IHostedService, IDisposable
                           "• /account create — Create an account\n" +
                           "• /account rename — Change your account nickname\n" +
                           "• /account increase — Increase account balance\n" +
+                          "• /account get — View account balance\n" +
                           "• /expense create — Create an expense (requires an account)\n" +
-                          "• /expense list — List expenses\n" +
-                          "If you need help, use the slash commands and check the documentation.";
+                          "• /expense list — List expenses";
 
             await channel.SendMessageAsync(message);
         }

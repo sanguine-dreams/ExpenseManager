@@ -64,7 +64,7 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
                 return;
             }
 
-            var lines = svc.Data.Items.Select(item => $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}");
+            var lines = svc.Data.Items.Select(item => $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}  | {item.Id}");
             var message = string.Join("\n", lines);
             await RespondAsync($"Expenses (page {svc.Data.PageNumber}/{svc.Data.TotalPages}):\n{message}", ephemeral: true);
             return;
