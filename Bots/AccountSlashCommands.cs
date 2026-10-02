@@ -51,7 +51,7 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<AccountResponse> svc)
         {
-            await RespondAsync(svc.IsSuccess ? $"Account created successfully: {svc.Data?.Nickname}" : svc.Message, ephemeral: true);
+            await RespondAsync(svc.IsSuccess ? $"{svc.Data?.Nickname}. Income:  {svc.Data.Income}. Savings: {svc.Data.Savings}" : svc.Message, ephemeral: true);
             return;
         }
 
