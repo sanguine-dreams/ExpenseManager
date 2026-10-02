@@ -41,10 +41,7 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
     }
 
     [SlashCommand("get", "Get Account Details.")]
-    public async Task GetAccount(
-       [Summary("nickname", "Display name for the account.")] string nickname,
-       [Summary("income", "Initial income amount.")] double income = 0,
-       [Summary("savings", "Initial savings amount.")] double savings = 0)
+    public async Task GetAccount()
     {
         var discordId = Context.User.Id.ToString();
 
