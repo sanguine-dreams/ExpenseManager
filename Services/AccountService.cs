@@ -16,7 +16,12 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         var account = await _accountRepository.GetByDiscordId(discordId, guildId ?? string.Empty);
 
         if (account.IsSuccess)
-            return ServiceResponse<AccountResponse>.Success(_mapper.Map<AccountResponse>(account.Data));
+        {
+            var response = _mapper.Map<AccountResponse>(account.Data);
+            response.Income = account.Data.Income.ToString("N0");
+            response.Savings = account.Data.Savings.ToString("N0");
+            return ServiceResponse<AccountResponse>.Success(response);
+        }
 
         var createRequest = new AccountCreationRequest
         {
@@ -32,7 +37,10 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
     {
         var account = await _accountRepository.GetByDiscordId(discordId, guildId ?? string.Empty);
 
-        return ServiceResponse<AccountResponse>.Success(_mapper.Map<AccountResponse>(account.Data));
+        var response = _mapper.Map<AccountResponse>(account.Data);
+        response.Income = account.Data.Income.ToString("N0");
+        response.Savings = account.Data.Savings.ToString("N0");
+        return ServiceResponse<AccountResponse>.Success(response);
     }
 
     public async Task<ServiceResponse<AccountResponse>> Create(AccountCreationRequest request, string? guildId = null)
@@ -43,6 +51,8 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         if (!result.IsSuccess)
             return ServiceResponse<AccountResponse>.InternalError(result.Message);
         var response = _mapper.Map<AccountResponse>(result.Data);
+        response.Income = result.Data.Income.ToString("N0");
+        response.Savings = result.Data.Savings.ToString("N0");
         return ServiceResponse<AccountResponse>.Success(response);
     }
 
@@ -57,6 +67,8 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         if (!result.IsSuccess)
             return ServiceResponse<AccountResponse>.InternalError(result.Message);
         var response = _mapper.Map<AccountResponse>(result.Data);
+        response.Income = result.Data.Income.ToString("N0");
+        response.Savings = result.Data.Savings.ToString("N0");
         return ServiceResponse<AccountResponse>.Success(response);
     }
 
@@ -81,6 +93,8 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         if (!result.IsSuccess)
             return ServiceResponse<AccountResponse>.InternalError(result.Message);
         var response = _mapper.Map<AccountResponse>(result.Data);
+        response.Income = result.Data.Income.ToString("N0");
+        response.Savings = result.Data.Savings.ToString("N0");
         return ServiceResponse<AccountResponse>.Success(response);
     }
 
@@ -97,6 +111,8 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         if (!result.IsSuccess)
             return ServiceResponse<AccountResponse>.InternalError(result.Message);
         var response = _mapper.Map<AccountResponse>(result.Data);
+        response.Income = result.Data.Income.ToString("N0");
+        response.Savings = result.Data.Savings.ToString("N0");
         return ServiceResponse<AccountResponse>.Success(response);
     }
 
@@ -112,6 +128,8 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
             return ServiceResponse<AccountResponse>.InternalError(result.Message);
 
         var response = _mapper.Map<AccountResponse>(result.Data);
+        response.Income = result.Data.Income.ToString("N0");
+        response.Savings = result.Data.Savings.ToString("N0");
         return ServiceResponse<AccountResponse>.Success(response);
     }
 }

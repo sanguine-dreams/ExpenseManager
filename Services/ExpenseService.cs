@@ -39,6 +39,7 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
         if (!string.IsNullOrWhiteSpace(guildId)) expense.GuildId = guildId!;
         var result = await _expenseRepository.CreateExpense(expense);
         var response = _mapper.Map<CreateExpenseResponse>(result.Data);
+        response.Price = result.Data.Price.ToString("N0");
 
         return ServiceResponse<CreateExpenseResponse>.Success(response);
     }
@@ -58,7 +59,23 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
         var result = await _expenseRepository.GetAllExpenses(request, guildId ?? string.Empty);
 
         if (!result.IsSuccess) return ServiceResponse<PagedResult<GetExpensesResponse>>.InternalError(result.Message);
-        var response = _mapper.Map<PagedResult<GetExpensesResponse>>(result.Data);
+
+        var response = new PagedResult<GetExpensesResponse>
+        {
+            PageNumber = result.Data.PageNumber,
+            PageSize = result.Data.PageSize,
+            TotalCount = result.Data.TotalCount,
+            Items = result.Data.Items.Select(item => new GetExpensesResponse
+            {
+                Id = item.Id,
+                Price = item.Price.ToString("N0"),
+                CreatedAt = item.CreatedAt,
+                Category = item.Category.ToString(),
+                Other = item.Other,
+                PurchasedBy = item.PurchasedBy,
+            }).ToList(),
+        };
+
         return ServiceResponse<PagedResult<GetExpensesResponse>>.Success(response);
     }
 
@@ -69,6 +86,7 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
         if (!result.IsSuccess) return ServiceResponse<GetExpensesResponse>.InternalError(result.Message);
 
         var response = _mapper.Map<GetExpensesResponse>(result.Data);
+        response.Price = result.Data.Price.ToString("N0");
 
         return ServiceResponse<GetExpensesResponse>.Success(response);
 

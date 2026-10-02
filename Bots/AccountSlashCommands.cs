@@ -87,7 +87,8 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<AccountResponse> svc)
         {
-            await RespondAsync(svc.IsSuccess ? $"Increased balance to {svc.Data?.Income}." : svc.Message, ephemeral: true);
+            var balance = svc.Data?.Income ?? "0";
+            await RespondAsync(svc.IsSuccess ? $"Increased balance to {balance}." : svc.Message, ephemeral: true);
             return;
         }
 
@@ -103,7 +104,8 @@ public class AccountSlashCommands(IServiceProvider services) : InteractionModule
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<AccountResponse> svc)
         {
-            await RespondAsync(svc.IsSuccess ? $"Decreased balance to {svc.Data?.Income}." : svc.Message, ephemeral: true);
+            var balance = svc.Data?.Income ?? "0";
+            await RespondAsync(svc.IsSuccess ? $"Decreased balance to {balance}." : svc.Message, ephemeral: true);
             return;
         }
 

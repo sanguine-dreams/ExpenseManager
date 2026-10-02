@@ -40,7 +40,8 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<CreateExpenseResponse> svc)
         {
-            var message = svc.IsSuccess ? $"Expense created successfully. Price: {svc.Data?.Price} of category {svc.Data?.Category.ToString()}" : svc.Message;
+            var pricling = svc.Data?.Price is null ? "0" : svc.Data.Price;
+            var message = svc.IsSuccess ? $"Expense created successfully. Price: {pricling} of category {svc.Data?.Category.ToString()}" : svc.Message;
             await FollowupAsync(message, ephemeral: true);
             return;
         }
