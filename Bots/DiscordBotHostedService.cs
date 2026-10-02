@@ -9,28 +9,19 @@ using Microsoft.Extensions.Options;
 
 namespace ExpenseManager.Bots;
 
-public class DiscordBotHostedService : IHostedService, IDisposable
+public class DiscordBotHostedService(
+    IServiceProvider services,
+    DiscordSocketClient client,
+    InteractionService interactionService,
+    IOptions<DiscordOptions> options,
+    ILogger<DiscordBotHostedService> logger) : IHostedService, IDisposable
 {
-    private readonly IServiceProvider _services;
-    private readonly DiscordSocketClient _client;
-    private readonly InteractionService _interactionService;
-    private readonly ILogger<DiscordBotHostedService> _logger;
-    private readonly DiscordOptions _options;
+    private readonly IServiceProvider _services = services;
+    private readonly DiscordSocketClient _client = client;
+    private readonly InteractionService _interactionService = interactionService;
+    private readonly ILogger<DiscordBotHostedService> _logger = logger;
+    private readonly DiscordOptions _options = options.Value;
     private bool _disposed;
-
-    public DiscordBotHostedService(
-        IServiceProvider services,
-        DiscordSocketClient client,
-        InteractionService interactionService,
-        IOptions<DiscordOptions> options,
-        ILogger<DiscordBotHostedService> logger)
-    {
-        _services = services;
-        _client = client;
-        _interactionService = interactionService;
-        _logger = logger;
-        _options = options.Value;
-    }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {

@@ -42,7 +42,7 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
         {
             var pricling = svc.Data?.Price is null ? "0" : svc.Data.Price;
             var message = svc.IsSuccess ? $"Expense created successfully. Price: {pricling} of category {svc.Data?.Category.ToString()}" : svc.Message;
-            await FollowupAsync(message, ephemeral: true);
+            await FollowupAsync(message);
             return;
         }
 
@@ -67,7 +67,7 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
 
             var lines = svc.Data.Items.Select(item => $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}  | {item.Id}");
             var message = string.Join("\n", lines);
-            await RespondAsync($"Expenses (page {svc.Data.PageNumber}/{svc.Data.TotalPages}):\n{message}", ephemeral: true);
+            await RespondAsync($"Expenses (page {svc.Data.PageNumber}/{svc.Data.TotalPages}):\n{message}");
             return;
         }
 
