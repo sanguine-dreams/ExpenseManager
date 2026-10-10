@@ -8,7 +8,7 @@ namespace ExpenseManager.Services;
 public interface IExpenseService
 {
     Task<ServiceResponse<CreateExpenseResponse>> CreateExpense(CreateExpenseRequest request, string? discordId = null, string? guildId = null);
-    Task<ServiceResponse<PagedResult<GetExpensesResponse>>> GetAllExpenses(PaginatedRequest request, string? guildId = null);
+    Task<ServiceResponse<PagedResult<GetExpensesResponse>>> GetAllExpenses(PaginatedRequest request, bool includeIds = false, string? guildId = null);
     Task<ServiceResponse<GetExpensesResponse>> GetExpenseById(Guid id, string? guildId = null);
     Task<ServiceResponse> DeleteExpense(Guid id, string? guildId = null);
 }

@@ -52,10 +52,11 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
     [SlashCommand("list", "List expenses by page.")]
     public async Task ListExpenses(
         [Summary("page", "Page number.")] int page = 1,
-        [Summary("page_size", "Items per page.")] int pageSize = 10)
+        [Summary("page_size", "Items per page.")] int pageSize = 10,
+        [Summary("show_ids", "Whether to display item IDs in the output.")] bool showIds = false)
     {
         var controller = ActivatorUtilities.CreateInstance<ExpenseManagerController>(_services);
-        var actionResult = await controller.GetAllExpenses(new Data.Requests.PaginatedRequest { PageNumber = page, PageSize = pageSize }, Context.Guild?.Id.ToString());
+        var actionResult = await controller.GetAllExpenses(new Data.Requests.PaginatedRequest { PageNumber = page, PageSize = pageSize }, showIds, Context.Guild?.Id.ToString());
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<PagedResult<GetExpensesResponse>> svc)
         {
@@ -65,7 +66,11 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
                 return;
             }
 
-            var lines = svc.Data.Items.Select(item => $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}  | {item.Id}");
+            var lines = svc.Data.Items.Select(item =>
+            {
+                var idText = showIds && item.Id is Guid id ? $" | {id}" : string.Empty;
+                return $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}{idText}";
+            });
             var message = string.Join("\n", lines);
             await RespondAsync($"Expenses (page {svc.Data.PageNumber}/{svc.Data.TotalPages}):\n{message}");
             return;

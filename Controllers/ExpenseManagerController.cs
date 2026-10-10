@@ -19,9 +19,9 @@ public class ExpenseManagerController(IExpenseService expenseService) : Controll
     }
 
     [HttpGet("[action]")]
-    public async Task<IActionResult> GetAllExpenses([FromQuery] PaginatedRequest request, [FromHeader(Name = "X-Guild-Id")] string? guildId = null)
+    public async Task<IActionResult> GetAllExpenses([FromQuery] PaginatedRequest request, [FromQuery] bool includeIds = false, [FromHeader(Name = "X-Guild-Id")] string? guildId = null)
     {
-        var response = await _expenseService.GetAllExpenses(request, guildId);
+        var response = await _expenseService.GetAllExpenses(request, includeIds, guildId);
         return StatusCode(response.StatusCode, response);
     }
 
