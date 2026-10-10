@@ -52,7 +52,7 @@ namespace ExpenseManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("AccountId")
+                    b.Property<Guid?>("AccountId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Category")
@@ -121,8 +121,7 @@ namespace ExpenseManager.Migrations
                     b.HasOne("ExpenseManager.Data.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Account");
                 });

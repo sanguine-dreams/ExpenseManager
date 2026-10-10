@@ -56,6 +56,44 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DBContext>();
     db.Database.Migrate();
+    await BackfillMissingExpenseAccountIdsAsync(db);
+}
+
+static async Task BackfillMissingExpenseAccountIdsAsync(DBContext db)
+{
+    var accounts = await db.Accounts
+        .AsNoTracking()
+        .Select(a => new { a.Id, a.GuildId, a.Nickname })
+        .ToListAsync();
+
+    var accountLookup = accounts
+        .GroupBy(a => (a.GuildId, a.Nickname))
+        .ToDictionary(g => g.Key, g => g.First().Id);
+
+    var brokenExpenses = await db.Expenses
+        .Where(e => e.AccountId == Guid.Empty || !db.Accounts.Any(a => a.Id == e.AccountId))
+        .ToListAsync();
+
+    var updatedCount = 0;
+
+    foreach (var expense in brokenExpenses)
+    {
+        if (string.IsNullOrWhiteSpace(expense.PurchasedBy))
+            continue;
+
+        var key = (expense.GuildId, expense.PurchasedBy.Trim());
+
+        if (!accountLookup.TryGetValue(key, out var accountId))
+            continue;
+
+        expense.AccountId = accountId;
+        updatedCount++;
+    }
+
+    if (updatedCount > 0)
+    {
+        await db.SaveChangesAsync();
+    }
 }
 
 if (app.Environment.IsDevelopment())
