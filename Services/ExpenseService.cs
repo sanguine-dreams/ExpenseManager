@@ -29,7 +29,6 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
             }
 
             account = accountResult.Data;
-
             if (!string.IsNullOrWhiteSpace(account.Nickname))
             {
                 request.PurchasedBy = account.Nickname;

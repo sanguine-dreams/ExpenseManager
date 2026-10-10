@@ -3,8 +3,8 @@ namespace ExpenseManager.Data.Models;
 public class Expense
 {
     public Guid Id { get; set; } = new Guid();
-    public Guid? AccountId { get; set; }
-    public Account? Account { get; set; }
+    public Guid AccountId { get; set; }
+    public Account Account { get; set; }
     public required int Price { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public required Category Category { get; set; }
