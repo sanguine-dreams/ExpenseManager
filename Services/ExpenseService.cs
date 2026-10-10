@@ -8,14 +8,18 @@ using MapsterMapper;
 
 namespace ExpenseManager.Services;
 
-public class ExpenseService(IExpenseRepository expenseRepository, IAccountRepository accountRepository, IMapper mapper) : IExpenseService
+public class ExpenseService(IExpenseRepository expenseRepository, IAccountRepository accountRepository, IMapper mapper, IAccountService accountService) : IExpenseService
 {
     private readonly IExpenseRepository _expenseRepository = expenseRepository;
     private readonly IAccountRepository _accountRepository = accountRepository;
+
+    private readonly IAccountService _accountService = accountService;
     private readonly IMapper _mapper = mapper;
 
     public async Task<ServiceResponse<CreateExpenseResponse>> CreateExpense(CreateExpenseRequest request, string? discordId = null, string? guildId = null)
     {
+        var account = default(Account);
+
         if (!string.IsNullOrWhiteSpace(discordId))
         {
             var accountResult = await _accountRepository.GetByDiscordId(discordId, guildId ?? string.Empty);
@@ -24,18 +28,24 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
                 return ServiceResponse<CreateExpenseResponse>.BadRequest("No account found for your Discord user. Create one using the /account create command.");
             }
 
-            if (!string.IsNullOrWhiteSpace(accountResult.Data.Nickname))
+            account = accountResult.Data;
+
+            if (!string.IsNullOrWhiteSpace(account.Nickname))
             {
-                request.PurchasedBy = accountResult.Data.Nickname;
+                request.PurchasedBy = account.Nickname;
             }
 
-            accountResult.Data.Income -= request.Price;
-            var editAcc = await _accountRepository.EditAccount(accountResult.Data);
+            account.Income -= request.Price;
+            var editAcc = await _accountRepository.EditAccount(account);
             if (!editAcc.IsSuccess)
                 return ServiceResponse<CreateExpenseResponse>.InternalError($"Failed updating account: {editAcc.Message}");
         }
 
         var expense = _mapper.Map<Expense>(request);
+        if (account is not null)
+        {
+            expense.AccountId = account.Id;
+        }
         if (!string.IsNullOrWhiteSpace(guildId)) expense.GuildId = guildId!;
         var result = await _expenseRepository.CreateExpense(expense);
         var response = _mapper.Map<CreateExpenseResponse>(result.Data);
@@ -46,7 +56,9 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
 
     public async Task<ServiceResponse> DeleteExpense(Guid id, string? guildId = null)
     {
+        var existingExpense = await _expenseRepository.GetById(id, guildId);
         var result = await _expenseRepository.DeleteExpense(id, guildId ?? string.Empty);
+
 
         if (!result.IsSuccess) return ServiceResponse.InternalError(result.Message);
 

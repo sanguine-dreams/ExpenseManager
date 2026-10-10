@@ -52,6 +52,9 @@ namespace ExpenseManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Category")
                         .HasColumnType("INTEGER");
 
@@ -83,6 +86,8 @@ namespace ExpenseManager.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountId");
+
                     b.ToTable("Expenses");
                 });
 
@@ -109,6 +114,17 @@ namespace ExpenseManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GuildSettings");
+                });
+
+            modelBuilder.Entity("ExpenseManager.Data.Models.Expense", b =>
+                {
+                    b.HasOne("ExpenseManager.Data.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 #pragma warning restore 612, 618
         }
