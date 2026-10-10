@@ -64,7 +64,7 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
         return ServiceResponse.Success("Expense deleted successfully");
     }
 
-    public async Task<ServiceResponse<PagedResult<GetExpensesResponse>>> GetAllExpenses(PaginatedRequest request, bool includeIds = false, string? guildId = null)
+    public async Task<ServiceResponse<PagedResult<GetExpensesResponse>>> GetAllExpenses(PaginatedRequest request, string? guildId = null)
     {
         var result = await _expenseRepository.GetAllExpenses(request, guildId ?? string.Empty);
 
@@ -77,7 +77,7 @@ public class ExpenseService(IExpenseRepository expenseRepository, IAccountReposi
             TotalCount = result.Data.TotalCount,
             Items = result.Data.Items.Select(item => new GetExpensesResponse
             {
-                Id = includeIds ? item.Id : null,
+                Id = item.Id,
                 Price = item.Price.ToString("N0"),
                 CreatedAt = item.CreatedAt,
                 Category = item.Category.ToString(),

@@ -56,7 +56,7 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
         [Summary("show_ids", "Whether to display item IDs in the output.")] bool showIds = false)
     {
         var controller = ActivatorUtilities.CreateInstance<ExpenseManagerController>(_services);
-        var actionResult = await controller.GetAllExpenses(new Data.Requests.PaginatedRequest { PageNumber = page, PageSize = pageSize }, showIds, Context.Guild?.Id.ToString());
+        var actionResult = await controller.GetAllExpenses(new Data.Requests.PaginatedRequest { PageNumber = page, PageSize = pageSize }, Context.Guild?.Id.ToString());
 
         if (actionResult is ObjectResult obj && obj.Value is ServiceResponse<PagedResult<GetExpensesResponse>> svc)
         {
@@ -68,7 +68,7 @@ public class ExpenseSlashCommands(IExpenseService expenseService, IServiceProvid
 
             var lines = svc.Data.Items.Select(item =>
             {
-                var idText = showIds && item.Id is Guid id ? $" | {id}" : string.Empty;
+                var idText = showIds ? $" | {item.Id}" : string.Empty;
                 return $"• {item.Price} | {item.Category} | {item.Other ?? "-"} | {item.PurchasedBy}{idText}";
             });
             var message = string.Join("\n", lines);

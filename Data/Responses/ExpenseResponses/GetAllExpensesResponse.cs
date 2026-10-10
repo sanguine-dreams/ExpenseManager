@@ -1,12 +1,10 @@
-using System.Text.Json.Serialization;
 using ExpenseManager.Data.Models;
 
 namespace ExpenseManager.Data.Responses;
 
 public class GetExpensesResponse
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Guid? Id { get; set; }
+    public Guid Id { get; set; }
     public required string Price { get; set; }
     public DateTime CreatedAt { get; set; }
     public required string Category { get; set; }
